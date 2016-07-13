@@ -1,0 +1,92 @@
+use Libraries.Game.Game
+use Libraries.Game.Graphics.Camera
+use Libraries.Game.Graphics.Drawable
+use Libraries.Game.Graphics.Model
+use Libraries.Game.Graphics.Color
+use Libraries.Compute.Vector3
+
+/*
+    This is a default class for creating a game in Quorum. Note that the Main 
+    action begins by calling StartGame(), which loads a window a game can 
+    be displayed in. The action CreateGame is where the game should load any 
+    assets, like images to be displayed, frames of animation, or sounds to be
+    played. 
+*/
+class Main is Game
+
+
+Drawable status_bar
+    Drawable status
+    Model character
+    Color color
+    number stat = 600
+    Camera cam3D = undefined
+    Camera cam2D = undefined
+
+/*Drawable square
+Model box
+*/
+    /*
+        This action, Main, starts our computer program. In Quorum, programs always
+        begin from Main.
+    */
+    action Main
+        StartGame()
+    end
+
+    /*
+        This action sets up the default values for a game. For example, we might
+        use the Libraries.Game.Graphics.Drawable class to load up an image or 
+        a shape. Or, we might add a Libraries.Interface.Button for making something clickable
+        or a Libraries.Interface.TextBox for gathering user input in a game.
+    */
+    action CreateGame
+
+cam3D = GetCamera3D()
+    cam2D = GetCamera2D()
+    //our status bar is by default at the bottom left of our screen. 
+         //this moves it to the low center of the game screen
+    status_bar:LoadRectangle(cast(integer, stat), 50, color:White())
+    status_bar:SetPosition(100, 50)
+    Add(status_bar)
+    //Load full status and add it to the status bar
+    status:LoadFilledRectangle(cast(integer,stat), 50, color:Green())
+    status_bar:Add(status)
+    //we add our character to the center of our screen
+    character:LoadBox(3, 3, 3, color:Purple())
+    Add(character)
+      /*Color color
+      color:SetColor(1,0,0,1)
+      square:LoadFilledRectangle(200,200, color)
+      box:LoadBox(2,2,2, color:Cyan())
+      square:SetPosition(300,200)
+      
+Add(square)      
+Add(box)
+     */
+    end
+
+    /*
+        The update action is called on every "frame" of animation in a game. This
+        action should be used to do operations on items. So, for example, we 
+        might use this action to change frames of animation, to rotate items, 
+        or to make creatures jump.
+    */
+    action Update(number seconds)
+Vector3 yAxis
+    yAxis:Set(0, 1, 0)
+    cam3D:RotateAround(character:GetGlobalPosition(), yAxis, seconds * 30)
+    stat = stat - 100*seconds
+    if stat > 0
+        if stat < 200
+            status:LoadFilledRectangle(cast(integer, stat), 50, color:Red())
+            cam2D:Move(0, -1, 0)            
+        else 
+            status:LoadFilledRectangle(cast(integer, stat), 50, color:Green())
+        end
+    else
+        //character:Scale(1,0,1)
+        //Remove(character)
+    end     
+    end
+end
